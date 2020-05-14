@@ -1,5 +1,6 @@
 package org.tues.fileshare.Controller;
 
+import org.apache.tomcat.util.http.fileupload.impl.FileSizeLimitExceededException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -7,6 +8,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.tues.fileshare.Entity.File;
+import org.tues.fileshare.Entity.User;
 import org.tues.fileshare.Service.IFileService;
 import org.tues.fileshare.Service.IUserService;
 import javax.servlet.http.HttpServletRequest;
@@ -36,15 +38,15 @@ public class FileController {
         return "show_file";
     }
 
-    @GetMapping("/files/upload-file")
-    public String showCreateFile(Model model){
+    @GetMapping("/profile-directory/upload-file/**")
+    public String showCreateFile(@RequestParam("path") String path, Model model){
         model.addAttribute("file", new File());
 
         return "upload_file";
     }
 
-    @PostMapping("/files/upload-file/")
-    public String createFile(@RequestParam("path") String filepath,
+    @PostMapping("/profile-directory/upload-file/**")
+    public String createFile(@RequestParam("filePath") String filePath,
                              @ModelAttribute File file,
                              @RequestParam("theFile") MultipartFile theFile,
                              HttpServletRequest request, Model model){
@@ -54,25 +56,37 @@ public class FileController {
             return "redirect:/";
         }
 
+        filePath = filePath.replace("path=", "");
+
+        try {
+            filePath = java.net.URLDecoder.decode(filePath, StandardCharsets.UTF_8.name());
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+
+            return "redirect:/profile-directory/?path=" + username.toString();
+        }
+
+
         model.addAttribute("theFile", theFile);
         model.addAttribute("file", file);
 
         file.setFilename(theFile.getOriginalFilename());
-        file.setFilePath(filepath);
+        file.setFilePath(filePath);
         file.setOwner(userService.findByUsername(username.toString()));
-        fileService.save(file);
 
         try {
             byte [] fileBytes = theFile.getBytes();
             Path path = Paths.get(STORAGE_PATH + file.getFilePath() + "\\" + file.getFilename());
             Files.createFile(path);
             Files.write(path, fileBytes);
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
+        } catch (Exception e) {
             e.printStackTrace();
+            return "redirect:/profile-directory/?path=" + filePath;
         }
 
-        return "redirect:/";
+        fileService.save(file);
+
+        return "redirect:/profile-directory/?path=" + filePath;
     }
 
     @GetMapping("/profile-directory/create-folder/**")
@@ -91,18 +105,17 @@ public class FileController {
     public String createFolder(@RequestParam("path") String path,
                                @RequestParam("folderName") String folderName, Model model, HttpServletRequest request){
         Object un = request.getSession().getAttribute("username");
-        path = path.replace("path=src/main/resources/static/storage", "");
+
+        if (un == null){
+            return "redirect:/";
+        }
+
+        path = path.replace("path=", "");
 
         try {
             path = java.net.URLDecoder.decode(path, StandardCharsets.UTF_8.name());
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
-        }
-
-        System.out.println(path);
-
-        if (un == null){
-            return "redirect:/";
         }
 
         model.addAttribute("folderName", folderName);
@@ -122,16 +135,15 @@ public class FileController {
     public String navigateProfile(@RequestParam("path") String folderPath,
                                   Model model){
 
-        String destination = "src/main/resources/static/storage/" + folderPath;
-
-        if (folderPath.contains("src/main/resources/static/storage/")){
-            destination = folderPath;
+        if (folderPath == null || folderPath.equals("")){
+            return "redirect:/";
         }
-//        System.out.println("Name: " + new java.io.File(destination).getName());
-//        System.out.println("Path: " + new java.io.File(destination).getAbsolutePath());
-//        System.out.println("-----------------------");
-//        System.out.println(Arrays.toString(new java.io.File(destination).listFiles()));
-//        System.out.println(Arrays.toString(new java.io.File("C:\\").listFiles()));
+
+        String destination = folderPath.replace("src/main/resources/static/storage/", "");
+
+//        if (folderPath.contains("src/main/resources/static/storage/")){
+//            destination = folderPath;
+//        }
 
         model.addAttribute("directory", destination);
 

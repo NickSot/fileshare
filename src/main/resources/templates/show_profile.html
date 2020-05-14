@@ -7,10 +7,10 @@
 <body>
     <h1 th:text="'List of files and directories in directory: ' + ${new java.io.File(directory).getName()}"></h1>
 
-    <a href="#" th:href="@{'/files/' + ${new java.io.File(directory).getPath()} + '/upload-file'}" th:text="'Upload a file'"></a>
+    <a href="#" th:href="@{'/profile-directory/upload-file/?path=' + ${directory}}" th:text="'Upload a file'"></a>
     <br>
     <a href="#" th:href="@{'/profile-directory/create-folder/?path=' + ${directory}}" th:text="'Create a folder'"></a>
-    <ul th:each="entity : ${new java.io.File(directory).list()}">
+    <ul th:each="entity : ${new java.io.File('src/main/resources/static/storage/' + directory).list()}">
         <li>
             <a href="#" th:href="'/profile-directory/?path=' + @{${directory} + '/' + ${entity}}" th:text="${entity}"></a>
         </li>

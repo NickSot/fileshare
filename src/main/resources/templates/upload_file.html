@@ -5,8 +5,8 @@
     <title>Upload file</title>
 </head>
 <body>
-    <form action="#" th:action="@{/files/upload-file}" th:object="${file}" method="post", enctype="multipart/form-data">
-        Filepath: <input type="text" th:field="*{filePath}">
+    <form action="#" th:action="@{'/profile-directory/upload-file/'}" th:object="${file}" method="post", enctype="multipart/form-data">
+        <input type="hidden" name="filePath" th:value="${#request.queryString}">
         <br>
         <input type="file" name="theFile">
         <br>
