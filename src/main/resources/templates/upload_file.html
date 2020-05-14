@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Upload file</title>
+</head>
+<body>
+    <form action="#" th:action="@{/files/upload-file}" th:object="${file}" method="post", enctype="multipart/form-data">
+        Filepath: <input type="text" th:field="*{filePath}">
+        <br>
+        <input type="file" name="theFile">
+        <br>
+        <input type="submit" value="Upload">
+        <input type="reset" value="Reset" />
+    </form>
+</body>
+</html>

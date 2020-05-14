@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Welcome to fileshare!</title>
+</head>
+<body>
+    <a th:href=@{/login} th:style="${username} ?  'visibility: none' : ''">Login</a>
+    <a th:href=@{/register} th:style="${username} ? 'visibility: none' : ''">Register</a>
+    <a th:href=@{/logout}>Logout</a>
+
+    <h2 th:text="'Hello, ' + ${username}"></h2>
+
+    <a th:if="${user != null}" href="#" th:href="@{'/profile-directory/?path=' + ${username} + '/'}" th:text="'Go to your root directory'"></a>
+
+    <div>
+        <h3 th:if="${user != null}">
+            <span th:text="'Uploaded files'"></span>
+        </h3>
+        <ul th:if="${user != null}">
+            <li th:each="file : ${user.getFiles()}">
+                <a href="#" th:href="@{'/user/' + ${user.getId()} + '/file/' + ${file.getId()}}">
+                    <span th:text="${file.getFilename()}"></span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <div>
+        <h3 th:if="${user != null}">
+            <span th:text="'Files shared with you'"></span>
+        </h3>
+        <ul th:if="${user != null}">
+            <li th:each="file : ${user.getFilesSharedTo()}">
+                <a href="#" th:href="@{'/user/' + ${file.user.getId()} + '/file/' + ${file.getId()}}">
+                    <span th:text="${file.getFilename()}"></span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Create a directory</title>
+</head>
+<body>
+    <form action="#" th:action="@{'/profile-directory/create-folder/'}" method="post">
+        <input type="hidden" name="path" th:value="${#request.queryString}">
+        <input type="text" name="folderName">
+        <input type="submit" value="Create directory">
+        <input type="reset" value="Reset">
+    </form>
+</body>
+</html>

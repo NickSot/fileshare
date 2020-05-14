@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${username} + ' lair'"></title>
+</head>
+<body>
+    <h1 th:text="'List of files and directories in directory: ' + ${new java.io.File(directory).getName()}"></h1>
+
+    <a href="#" th:href="@{'/files/' + ${new java.io.File(directory).getPath()} + '/upload-file'}" th:text="'Upload a file'"></a>
+    <br>
+    <a href="#" th:href="@{'/profile-directory/create-folder/?path=' + ${directory}}" th:text="'Create a folder'"></a>
+    <ul th:each="entity : ${new java.io.File(directory).list()}">
+        <li>
+            <a href="#" th:href="'/profile-directory/?path=' + @{${directory} + '/' + ${entity}}" th:text="${entity}"></a>
+        </li>
+    </ul>
+</body>
+</html>
