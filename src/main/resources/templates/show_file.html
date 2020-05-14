@@ -2,10 +2,19 @@
 <html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
-    <title th:text="${file.getName()}"></title>
+    <title th:text="${file.getFilename()}"></title>
 </head>
 <body>
-    <h1 th:text="'File name: ' + ${file.getName()}"></h1>
+    <h1 th:text="'File name: ' + ${file.getFilename()}"></h1>
     <h2 th:text="'File owner: ' + ${user.getUsername()}"></h2>
+
+
+    <form action="#" th:action="@{'/profile-directory/share-file/' + ${file.getId()} + '/'}" method="post">
+        User to share with: <input type="text" name="username">
+        <br>
+        <input type="submit" value="Share">
+    </form>
+
+    <a href="#" th:href="@{'/profile-directory/unshare-file/' + ${file.getId()} + '/'}" th:text="Unshare"></a>
 </body>
 </html>

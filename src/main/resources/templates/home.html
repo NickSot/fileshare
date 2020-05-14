@@ -19,7 +19,7 @@
         </h3>
         <ul th:if="${user != null}">
             <li th:each="file : ${user.getFiles()}">
-                <a href="#" th:href="@{'/user/' + ${user.getId()} + '/file/' + ${file.getId()}}">
+                <a href="#" th:href="@{'/profile-directory/' + ${user.getId()} + '/file/?path=' + ${file.getFilePath()} + '/' + ${file.getFilename()}}">
                     <span th:text="${file.getFilename()}"></span>
                 </a>
             </li>
@@ -32,7 +32,7 @@
         </h3>
         <ul th:if="${user != null}">
             <li th:each="file : ${user.getFilesSharedTo()}">
-                <a href="#" th:href="@{'/user/' + ${file.user.getId()} + '/file/' + ${file.getId()}}">
+                <a href="#" th:href="@{'profile-directory/file/' + ${file.getId()} + '/download'}">
                     <span th:text="${file.getFilename()}"></span>
                 </a>
             </li>

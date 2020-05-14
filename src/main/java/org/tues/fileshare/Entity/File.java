@@ -1,10 +1,13 @@
 package org.tues.fileshare.Entity;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import javax.persistence.*;
 import java.util.List;
 
 @Entity
-@Table(name="FILE")
+@Table(name="FILE", uniqueConstraints = @UniqueConstraint(columnNames = {"filePath", "filename"}))
 public class File {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -21,6 +24,7 @@ public class File {
     }
 
     @ManyToOne
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name="user_id")
     private User owner;
 
@@ -33,6 +37,7 @@ public class File {
     }
 
     @ManyToMany(mappedBy = "filesSharedTo")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private List<User> sharedWith;
 
     public List<User> getSharedWith() {

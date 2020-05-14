@@ -23,6 +23,11 @@ public class FileService implements IFileService{
     }
 
     @Override
+    public <S extends File> S findByNameAndPath(String filename, String path) {
+        return fileRepository.findByNameAndPath(filename, path);
+    }
+
+    @Override
     public Optional<File> findById(Long aLong) {
         return fileRepository.findById(aLong);
     }

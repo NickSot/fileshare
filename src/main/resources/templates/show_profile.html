@@ -11,8 +11,13 @@
     <br>
     <a href="#" th:href="@{'/profile-directory/create-folder/?path=' + ${directory}}" th:text="'Create a folder'"></a>
     <ul th:each="entity : ${new java.io.File('src/main/resources/static/storage/' + directory).list()}">
-        <li>
-            <a href="#" th:href="'/profile-directory/?path=' + @{${directory} + '/' + ${entity}}" th:text="${entity}"></a>
+        <li th:if="${new java.io.File('src/main/resources/static/storage/' + directory + '/' + entity).isDirectory()}">
+            <a href="#" th:href="@{'/profile-directory/?path=' + ${directory} + '/' + ${entity}}" th:text="${entity}"></a>
+        </li>
+        <li th:if="${new java.io.File('src/main/resources/static/storage/' + directory + '/' + entity).isFile()}">
+            <a href="#" th:href="@{'/profile-directory/' + ${user_id} + '/file/?path=' + ${directory} + '/' + ${entity}}" th:text="${entity}"></a>
+            <a href="#" th:href="@{'/profile-directory/delete-file/' + ${fileService.findByNameAndPath(entity, directory).getId()} + '/'}" th:text="Delete"></a>
+            <a href="#" th:href="@{'/profile-directory/rename-file/' + ${fileService.findByNameAndPath(entity, directory).getId()} + '/'}" th:text="Rename"></a>
         </li>
     </ul>
 </body>

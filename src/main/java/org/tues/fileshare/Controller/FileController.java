@@ -1,6 +1,6 @@
 package org.tues.fileshare.Controller;
 
-import org.apache.tomcat.util.http.fileupload.impl.FileSizeLimitExceededException;
+import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,7 +12,10 @@ import org.tues.fileshare.Entity.User;
 import org.tues.fileshare.Service.IFileService;
 import org.tues.fileshare.Service.IUserService;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -29,13 +32,113 @@ public class FileController {
     private IUserService userService;
     private String STORAGE_PATH = "C://Users//NIKI//Desktop//fileshare//src//main//resources//static//storage//";
 
-    @GetMapping("/user/{user_id}/file/{file_id}")
-    public String displayFile(@PathVariable("user_id") long user_id, @PathVariable("file_id") long file_id,
-                              Model model) {
-        model.addAttribute("file", fileService.findById(file_id));
-        model.addAttribute("user", userService.findById(user_id));
+    @GetMapping("/profile-directory/unshare-file/{file_id}")
+    public String unshareFile(@PathVariable("file_id") long file_id,
+                              HttpServletRequest request){
+        Object un = request.getSession().getAttribute("username");
+
+        if (un == null || !un.toString().equals(fileService.findById(file_id).get().getOwner().getUsername())){
+            return "redirect:/";
+        }
+
+        File file = fileService.findById(file_id).get();
+        file.getSharedWith().forEach(u -> {
+            u.getFilesSharedTo().remove(file);
+            userService.save(u);
+        });
+        file.getSharedWith().clear();
+        fileService.save(file);
+
+        return "redirect:/profile-directory/?path=" + un.toString() + "/";
+    }
+
+    @GetMapping("/profile-directory/rename-file/{file_id}/")
+    public String renameFileShow(@PathVariable("file_id") long file_id, Model model){
+
+        model.addAttribute("file_id", file_id);
+        return "rename_file";
+    }
+
+    @PostMapping("/profile-directory/rename-file/{file_id}/")
+    public String renameFile(@PathVariable("file_id") long file_id, @RequestParam("new_filename") String new_filename, HttpServletRequest request){
+        File file = fileService.findById(file_id).get();
+        java.io.File f = new java.io.File(STORAGE_PATH + '/' + file.getFilePath() + '/' + file.getFilename());
+        java.io.File f1 = new java.io.File(STORAGE_PATH + '/' + file.getFilePath() + '/' + new_filename);
+
+        try {
+            Files.move(f.toPath(), f1.toPath());
+            file.setFilename(new_filename);
+            fileService.save(file);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        String referer = request.getHeader("Referer");
+        return "redirect:" + referer;
+    }
+
+    @GetMapping("/profile-directory/delete-file/{file_id}/")
+    public String deleteFile(@PathVariable("file_id") long file_id, HttpServletRequest request){
+        File file = fileService.findById(file_id).get();
+
+        try {
+            Files.delete(Paths.get(STORAGE_PATH + '/' + file.getFilePath() + '/' + file.getFilename()));
+            fileService.delete(file);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        String referer = request.getHeader("Referer");
+        return "redirect:" + referer;
+    }
+
+    @GetMapping("/profile-directory/{user_id}/file/**")
+    public String displayFile(@PathVariable("user_id") long user_id, @RequestParam("path") String path,
+                              Model model, HttpServletRequest request) {
+        Object username = request.getSession().getAttribute("username");
+
+        if (username == null || userService.findById(user_id).get() != userService.findByUsername(username.toString())){
+            return "redirect:/";
+        }
+
+        try {
+            path = java.net.URLDecoder.decode(path, StandardCharsets.UTF_8.name());
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+
+            return "redirect:/profile-directory/?path=" + username.toString() + "/";
+        }
+
+        String[] pathComponents = path.split("/");
+
+        File file = fileService.findByNameAndPath(
+                pathComponents[pathComponents.length - 1],
+                path.replace("/" + pathComponents[pathComponents.length - 1], ""));
+
+        model.addAttribute("user", userService.findByUsername(username.toString()));
+        model.addAttribute("file", file);
 
         return "show_file";
+    }
+
+    @PostMapping("/profile-directory/share-file/{file_id}/")
+    public String shareFile(@PathVariable("file_id") long file_id, @RequestParam("username") String username,
+                            HttpServletRequest request){
+        Object un = request.getSession().getAttribute("username");
+
+        if (un == null){
+            return "redirect:/";
+        }
+
+        User user = userService.findByUsername(username);
+        File file = fileService.findById(file_id).get();
+
+        user.getFilesSharedTo().add(file);
+        file.getSharedWith().add(user);
+        userService.save(user);
+        fileService.save(file);
+
+        return "redirect:/profile-directory/" + user.getId() + "/file/?path=" + file.getFilePath() + "/" + file.getFilename();
     }
 
     @GetMapping("/profile-directory/upload-file/**")
@@ -63,12 +166,8 @@ public class FileController {
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
 
-            return "redirect:/profile-directory/?path=" + username.toString();
+            return "redirect:/profile-directory/?path=" + username.toString() + "/";
         }
-
-
-        model.addAttribute("theFile", theFile);
-        model.addAttribute("file", file);
 
         file.setFilename(theFile.getOriginalFilename());
         file.setFilePath(filePath);
@@ -85,6 +184,9 @@ public class FileController {
         }
 
         fileService.save(file);
+        User user = userService.findByUsername(username.toString());
+        user.getFiles().add(file);
+        userService.save(user);
 
         return "redirect:/profile-directory/?path=" + filePath;
     }
@@ -133,7 +235,12 @@ public class FileController {
 
     @GetMapping("/profile-directory/**")
     public String navigateProfile(@RequestParam("path") String folderPath,
-                                  Model model){
+                                  Model model, HttpServletRequest request){
+        Object un = request.getSession().getAttribute("username");
+
+        if (un == null){
+            return "redirect:/";
+        }
 
         if (folderPath == null || folderPath.equals("")){
             return "redirect:/";
@@ -141,12 +248,32 @@ public class FileController {
 
         String destination = folderPath.replace("src/main/resources/static/storage/", "");
 
-//        if (folderPath.contains("src/main/resources/static/storage/")){
-//            destination = folderPath;
-//        }
-
         model.addAttribute("directory", destination);
+        model.addAttribute("user_id", userService.findByUsername(un.toString()).getId());
+        model.addAttribute("fileService", fileService);
+
+        System.out.println(destination);
+        System.out.println(new java.io.File(destination).list());
 
         return "show_profile";
+    }
+
+    @GetMapping("profile-directory/file/{file_id}/download")
+    public void download(@PathVariable("file_id") long file_id,
+                           HttpServletRequest request, HttpServletResponse response){
+        try {
+            File f = fileService.findById(file_id).get();
+            java.io.File file = new java.io.File(STORAGE_PATH + "/" + f.getFilePath() + "/" + f.getFilename());
+
+            System.out.println(STORAGE_PATH + "/" + f.getFilePath() + "/" + f.getFilename());
+
+            InputStream is = new FileInputStream(file);
+
+            IOUtils.copy(is, response.getOutputStream());
+            is.close();
+            response.flushBuffer();
+        } catch (IOException ex) {
+            throw new RuntimeException("IOError writing file to output stream");
+        }
     }
 }
