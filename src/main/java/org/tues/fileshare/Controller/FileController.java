@@ -252,9 +252,6 @@ public class FileController {
         model.addAttribute("user_id", userService.findByUsername(un.toString()).getId());
         model.addAttribute("fileService", fileService);
 
-        System.out.println(destination);
-        System.out.println(new java.io.File(destination).list());
-
         return "show_profile";
     }
 
@@ -264,8 +261,6 @@ public class FileController {
         try {
             File f = fileService.findById(file_id).get();
             java.io.File file = new java.io.File(STORAGE_PATH + "/" + f.getFilePath() + "/" + f.getFilename());
-
-            System.out.println(STORAGE_PATH + "/" + f.getFilePath() + "/" + f.getFilename());
 
             InputStream is = new FileInputStream(file);
 

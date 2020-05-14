@@ -3,17 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <title>Welcome, please register!</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
 </head>
 <body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" th:href=@{/login} th:style="${username} ?  'visibility: none' : ''">Login</a>
+        <a class="navbar-brand" th:href=@{/register} th:style="${username} ? 'visibility: none' : ''">Register</a>
+        <a class="navbar-brand" th:href=@{/logout}>Logout</a>
+    </nav>
+
     <form action="#" th:action="@{/register}" th:object="${user}" method="post">
-        Email (Username): <input type="text", th:field="*{username}">
-        <td th:if="${#fields.hasErrors('username')}" th:errors="*{username}">Username Error</td>
-        <br>
-        Password: <input type="password", th:field="*{password}">
-        <td th:if="${#fields.hasErrors('password')}" th:errors="*{password}">Password Error</td>
-        <br>
-        <input type="submit" value="Register">
-        <input type="reset" value="Reset" />
+        <div class="form-group col-md-6" style="border: 2px solid black">
+            <label for="username">Username</label>
+            <input class="form-control" type="text", id="username" th:field="*{username}">
+            <td th:if="${#fields.hasErrors('username')}" th:errors="*{username}">Username Error</td>
+            <br>
+            <label for="password"> Username</label>
+            <input class="form-control" type="password", th:field="*{password}" id="password">
+            <td th:if="${#fields.hasErrors('password')}" th:errors="*{password}">Password Error</td>
+            <br>
+            <input class="btn btn-primary mb-2" type="submit" value="Register">
+            <input class="btn btn-primary mb-2"type="reset" value="Reset" />
+        </div>
     </form>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
 </body>
 </html>

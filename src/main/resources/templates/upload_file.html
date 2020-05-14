@@ -3,15 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <title>Upload file</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
 </head>
 <body>
-    <form action="#" th:action="@{'/profile-directory/upload-file/'}" th:object="${file}" method="post", enctype="multipart/form-data">
-        <input type="hidden" name="filePath" th:value="${#request.queryString}">
-        <br>
-        <input type="file" name="theFile">
-        <br>
-        <input type="submit" value="Upload">
-        <input type="reset" value="Reset" />
-    </form>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" th:href=@{/login} th:style="${username} ?  'visibility: none' : ''">Login</a>
+        <a class="navbar-brand" th:href=@{/register} th:style="${username} ? 'visibility: none' : ''">Register</a>
+        <a class="navbar-brand" th:href=@{/logout}>Logout</a>
+    </nav>
+
+    <div style="padding-left: 7%;">
+        <form action="#" th:action="@{'/profile-directory/upload-file/'}" th:object="${file}" method="post", enctype="multipart/form-data">
+            <div class="form-group col-md-6" style="border: 2px solid black">
+                <input type="hidden" name="filePath" th:value="${#request.queryString}">
+                <br>
+                <label for="theFile">A file of your choice</label>
+                <input class="form-control-file" type="file" name="theFile" id="theFile">
+                <br>
+                <input class="btn btn-primary mb-2" type="submit" value="Upload">
+                <input class="btn btn-primary mb-2" type="reset" value="Reset" />
+            </div>
+        </form>
+    </div>
 </body>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
 </html>

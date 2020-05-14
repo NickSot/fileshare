@@ -3,22 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <title th:text="${username} + ' lair'"></title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+
+    <style>
+        .outer{
+            padding-left: 7%;
+        }
+    </style>
 </head>
 <body>
-    <h1 th:text="'List of files and directories in directory: ' + ${new java.io.File(directory).getName()}"></h1>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" th:href=@{/login} th:style="${username} ?  'visibility: none' : ''">Login</a>
+        <a class="navbar-brand" th:href=@{/register} th:style="${username} ? 'visibility: none' : ''">Register</a>
+        <a class="navbar-brand" th:href=@{/logout}>Logout</a>
+    </nav>
 
-    <a href="#" th:href="@{'/profile-directory/upload-file/?path=' + ${directory}}" th:text="'Upload a file'"></a>
-    <br>
-    <a href="#" th:href="@{'/profile-directory/create-folder/?path=' + ${directory}}" th:text="'Create a folder'"></a>
-    <ul th:each="entity : ${new java.io.File('src/main/resources/static/storage/' + directory).list()}">
-        <li th:if="${new java.io.File('src/main/resources/static/storage/' + directory + '/' + entity).isDirectory()}">
-            <a href="#" th:href="@{'/profile-directory/?path=' + ${directory} + '/' + ${entity}}" th:text="${entity}"></a>
-        </li>
-        <li th:if="${new java.io.File('src/main/resources/static/storage/' + directory + '/' + entity).isFile()}">
-            <a href="#" th:href="@{'/profile-directory/' + ${user_id} + '/file/?path=' + ${directory} + '/' + ${entity}}" th:text="${entity}"></a>
-            <a href="#" th:href="@{'/profile-directory/delete-file/' + ${fileService.findByNameAndPath(entity, directory).getId()} + '/'}" th:text="Delete"></a>
-            <a href="#" th:href="@{'/profile-directory/rename-file/' + ${fileService.findByNameAndPath(entity, directory).getId()} + '/'}" th:text="Rename"></a>
-        </li>
-    </ul>
+    <div class="outer">
+        <a class="stretched-link display-4" href="#" th:href="@{'/profile-directory/upload-file/?path=' + ${directory}}" th:text="'Upload a file'"></a>
+        <br>
+        <a class="stretched-link display-4" href="#" th:href="@{'/profile-directory/create-folder/?path=' + ${directory}}" th:text="'Create a folder'"></a>
+        <br>
+        <br>
+        <h1 class="display-3" th:text="'Current directory: ' + ${new java.io.File(directory).getName()}"></h1>
+
+        <ul class="list-group" th:each="entity : ${new java.io.File('src/main/resources/static/storage/' + directory).list()}">
+            <li class="list-group-item" th:if="${new java.io.File('src/main/resources/static/storage/' + directory + '/' + entity).isDirectory()}">
+                <img src="images/folder.png" alt="">
+                <a class="stretched-link display-5" href="#" th:href="@{'/profile-directory/?path=' + ${directory} + '/' + ${entity}}" th:text="${entity}"></a>
+            </li>
+            <li class="list-group-item" th:if="${new java.io.File('src/main/resources/static/storage/' + directory + '/' + entity).isFile()}">
+                <img src="images/file.png" alt="">
+                <a class="stretched-link display-5" href="#" th:href="@{'/profile-directory/' + ${user_id} + '/file/?path=' + ${directory} + '/' + ${entity}}" th:text="${entity}"></a>
+                <a class="stretched-link display-5" href="#" th:href="@{'/profile-directory/delete-file/' + ${fileService.findByNameAndPath(entity, directory).getId()} + '/'}" th:text="Delete"></a>
+                <a class="stretched-link display-5" href="#" th:href="@{'/profile-directory/rename-file/' + ${fileService.findByNameAndPath(entity, directory).getId()} + '/'}" th:text="Rename"></a>
+            </li>
+        </ul>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
 </body>
 </html>

@@ -3,13 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <title>Create a directory</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
 </head>
 <body>
-    <form action="#" th:action="@{'/profile-directory/create-folder/'}" method="post">
-        <input type="hidden" name="path" th:value="${#request.queryString}">
-        <input type="text" name="folderName">
-        <input type="submit" value="Create directory">
-        <input type="reset" value="Reset">
-    </form>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" th:href=@{/login} th:style="${username} ?  'visibility: none' : ''">Login</a>
+        <a class="navbar-brand" th:href=@{/register} th:style="${username} ? 'visibility: none' : ''">Register</a>
+        <a class="navbar-brand" th:href=@{/logout}>Logout</a>
+    </nav>
+
+    <div style="padding-left: 7%;">
+        <form action="#" th:action="@{'/profile-directory/create-folder/'}" method="post">
+            <div class="form-group col-md-6" style="border: 2px solid black">
+                <input type="hidden" name="path" th:value="${#request.queryString}">
+                <label for="folderName">Folder name</label>
+                <input type="text" class="form-control" name="folderName" id="folderName">
+                <br>
+                <input type="submit" class="btn btn-primary col-md-2" value="Create directory">
+                <input type="reset" class="btn btn-primary col-md-1" style="margin-left: 7%;" value="Reset">
+            </div>
+        </form>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
 </body>
 </html>

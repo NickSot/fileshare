@@ -3,41 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <title>Welcome to fileshare!</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <style>
+        .outer-div{
+            padding-left: 7%;
+        }
+    </style>
 </head>
 <body>
-    <a th:href=@{/login} th:style="${username} ?  'visibility: none' : ''">Login</a>
-    <a th:href=@{/register} th:style="${username} ? 'visibility: none' : ''">Register</a>
-    <a th:href=@{/logout}>Logout</a>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" th:href=@{/login} th:style="${username} ?  'visibility: none' : ''">Login</a>
+        <a class="navbar-brand" th:href=@{/register} th:style="${username} ? 'visibility: none' : ''">Register</a>
+        <a class="navbar-brand" th:href=@{/logout}>Logout</a>
+    </nav>
 
-    <h2 th:text="'Hello, ' + ${username}"></h2>
+    <div class="outer-div">
+        <h2 class="display-3" th:text="'Hello, ' + ${username}"></h2>
+    </div>
 
-    <a th:if="${user != null}" href="#" th:href="@{'/profile-directory/?path=' + ${username} + '/'}" th:text="'Go to your root directory'"></a>
-
-    <div>
-        <h3 th:if="${user != null}">
+    <br>
+    <div class="outer-div">
+        <a class="stretched-link display-4" th:if="${user != null}" href="#" th:href="@{'/profile-directory/?path=' + ${username} + '/'}" th:text="'Go to your root directory'"></a>
+    </div>
+    <br>
+    <div class="outer-div">
+        <h3 class="display-5" th:if="${user != null}">
             <span th:text="'Uploaded files'"></span>
         </h3>
-        <ul th:if="${user != null}">
-            <li th:each="file : ${user.getFiles()}">
-                <a href="#" th:href="@{'/profile-directory/' + ${user.getId()} + '/file/?path=' + ${file.getFilePath()} + '/' + ${file.getFilename()}}">
+        <ul class="list-group" th:if="${user != null}">
+            <li class="list-group-item" th:each="file : ${user.getFiles()}">
+                <a class="stretched-link" href="#" th:href="@{'/profile-directory/' + ${user.getId()} + '/file/?path=' + ${file.getFilePath()} + '/' + ${file.getFilename()}}">
                     <span th:text="${file.getFilename()}"></span>
                 </a>
             </li>
         </ul>
     </div>
 
-    <div>
-        <h3 th:if="${user != null}">
+    <div class="outer-div">
+        <h3 class="display-5" th:if="${user != null}">
             <span th:text="'Files shared with you'"></span>
         </h3>
-        <ul th:if="${user != null}">
-            <li th:each="file : ${user.getFilesSharedTo()}">
-                <a href="#" th:href="@{'profile-directory/file/' + ${file.getId()} + '/download'}">
+        <ul th:if="${user != null}" class="list-group">
+            <li class="list-group-item" th:each="file : ${user.getFilesSharedTo()}">
+                <a class="stretched-link" href="#" th:href="@{'profile-directory/file/' + ${file.getId()} + '/download'}">
                     <span th:text="${file.getFilename()}"></span>
                 </a>
             </li>
         </ul>
     </div>
 
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
 </body>
 </html>
